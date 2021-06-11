@@ -72,11 +72,11 @@ module "consul_github_ssh" {
 }
 
 module "example_git_ssh_branch" {
-  source = "git::ssh://git@github.com/keilerkonzept/terraform-module-versions?ref=master"
+  source = "git::ssh://git@github.com/ValidUSA/terraform-module-versions?ref=master"
 }
 
 module "example_git_scp" {
-  source = "git::git@github.com:keilerkonzept/terraform-module-versions?ref=0.12.0"
+  source = "git::git@github.com:ValidUSA/terraform-module-versions?ref=0.12.0"
   version = "~> 0.12"
 }
 
@@ -96,8 +96,8 @@ $ terraform-module-versions list examples
 |----------|---------------------------------|------------|---------|------------------------------------------------------------------------------|
 | registry | consul                          | ~0.7.3     |         | hashicorp/consul/aws                                                         |
 | local    | local                           |            |         | ./local                                                                      |
-| git      | example_git_ssh_branch          |            | master  | git::ssh://git@github.com/keilerkonzept/terraform-module-versions?ref=master |
-| git      | example_git_scp                 | ~> 0.12    | 0.12.0  | git::git@github.com:keilerkonzept/terraform-module-versions?ref=0.12.0       |
+| git      | example_git_ssh_branch          |            | master  | git::ssh://git@github.com/ValidUSA/terraform-module-versions?ref=master |
+| git      | example_git_scp                 | ~> 0.12    | 0.12.0  | git::git@github.com:ValidUSA/terraform-module-versions?ref=0.12.0       |
 | git      | consul_github_ssh               | ~0.1.0     | 0.1.0   | git@github.com:hashicorp/terraform-aws-consul?ref=0.1.0                      |
 | git      | consul_github_https_no_ref      |            |         | github.com/hashicorp/terraform-aws-consul                                    |
 | git      | consul_github_https_missing_ref | 0.7.3      |         | github.com/hashicorp/terraform-aws-consul                                    |
@@ -147,7 +147,7 @@ with `-o json`:
     "path": "examples/main.tf",
     "name": "example_git_scp",
     "type": "git",
-    "source": "git::git@github.com:keilerkonzept/terraform-module-versions?ref=0.12.0",
+    "source": "git::git@github.com:ValidUSA/terraform-module-versions?ref=0.12.0",
     "constraint": "~> 0.12",
     "version": "0.12.0"
   },
@@ -155,7 +155,7 @@ with `-o json`:
     "path": "examples/main.tf",
     "name": "example_git_ssh_branch",
     "type": "git",
-    "source": "git::ssh://git@github.com/keilerkonzept/terraform-module-versions?ref=master",
+    "source": "git::ssh://git@github.com/ValidUSA/terraform-module-versions?ref=master",
     "version": "master"
   },
   {
@@ -296,10 +296,10 @@ with `-o json`:
 Using go get:
 
 ```bash
-go get -u github.com/keilerkonzept/terraform-module-versions
+go get -u github.com/ValidUSA/terraform-module-versions
 ```
 
-Or [download the binary for your platform](https://github.com/keilerkonzept/terraform-module-versions/releases/latest) from the releases page.
+Or [download the binary for your platform](https://github.com/ValidUSA/terraform-module-versions/releases/latest) from the releases page.
 
 ## Usage
 

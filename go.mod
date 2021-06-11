@@ -1,4 +1,4 @@
-module github.com/keilerkonzept/terraform-module-versions
+module github.com/ValidUSA/terraform-module-versions
 
 go 1.15
 
