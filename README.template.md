@@ -118,10 +118,10 @@ ${EXAMPLE_UPDATES_SINGLE}
 Using go get:
 
 ```bash
-go get -u github.com/keilerkonzept/${APP}
+go get -u github.com/ValidUSA/${APP}
 ```
 
-Or [download the binary for your platform](https://github.com/keilerkonzept/${APP}/releases/latest) from the releases page.
+Or [download the binary for your platform](https://github.com/ValidUSA/${APP}/releases/latest) from the releases page.
 
 ## Usage
 

@@ -22,10 +22,10 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			raw: "git::ssh://git@github.com/keilerkonzept/terraform-module-versions?ref=0.10.0",
+			raw: "git::ssh://git@github.com/ValidUSA/terraform-module-versions?ref=0.10.0",
 			want: &Source{
 				Git: &Git{
-					Remote:   "ssh://git@github.com/keilerkonzept/terraform-module-versions",
+					Remote:   "ssh://git@github.com/ValidUSA/terraform-module-versions",
 					RefValue: stringPtr("0.10.0"),
 				},
 			},
@@ -48,19 +48,19 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			raw: "git::git@github.com:keilerkonzept/terraform-module-versions?ref=0.12.0",
+			raw: "git::git@github.com:ValidUSA/terraform-module-versions?ref=0.12.0",
 			want: &Source{
 				Git: &Git{
-					Remote:   "ssh://git@github.com/keilerkonzept/terraform-module-versions",
+					Remote:   "ssh://git@github.com/ValidUSA/terraform-module-versions",
 					RefValue: stringPtr("0.12.0"),
 				},
 			},
 		},
 		{
-			raw: "git::git@github.com:keilerkonzept/terraform-module-versions//pkg/registry?ref=0.12.0",
+			raw: "git::git@github.com:ValidUSA/terraform-module-versions//pkg/registry?ref=0.12.0",
 			want: &Source{
 				Git: &Git{
-					Remote:     "ssh://git@github.com/keilerkonzept/terraform-module-versions",
+					Remote:     "ssh://git@github.com/ValidUSA/terraform-module-versions",
 					RefValue:   stringPtr("0.12.0"),
 					RemotePath: stringPtr("pkg/registry"),
 				},
