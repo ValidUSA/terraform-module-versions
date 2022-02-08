@@ -31,6 +31,24 @@ module "example_git_scp" {
   version = "~> 0.12"
 }
 
+module "example_with_prerelease_versions" {
+  source = "git@github.com:kubernetes/api.git?ref=v0.22.2"
+}
+
 module "local" {
   source = "./local"
+}
+
+variable "_0_15_sensitive_example" {
+  type      = string
+  sensitive = true
+}
+
+output "0_15_sensitive_example" {
+  value = "foo-${var._0_15_sensitive_example}"
+  sensitive = true
+}
+
+output "0_15_nonsensitive_example" {
+  value = nonsensitive(var._0_15_sensitive_example)
 }

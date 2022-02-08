@@ -20,27 +20,31 @@ import (
 	"github.com/ValidUSA/terraform-module-versions/pkg/scan"
 	"github.com/ValidUSA/terraform-module-versions/pkg/update"
 
+	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/peterbourgon/ff/v3/ffcli"
 	"github.com/sgreben/flagvar"
 )
 
 var (
 	appName       = "terraform-module-versions"
-	version       = "2-SNAPSHOT"
+	version       = "3-SNAPSHOT"
 	updatesClient = update.Client{
 		Registry: registry.Client{
 			HTTP: http.DefaultClient,
 		},
 	}
 	config struct {
-		Paths                   []string
-		ModuleNames             flagvar.StringSet
-		Output                  flagvar.Enum
-		OutputFormat            output.Format
-		RegistryHeaders         flagvar.Assignments
-		Quiet                   bool
-		UpdatesFoundNonzeroExit bool
-		All                     bool
+		Paths                           []string
+		ModuleNames                     flagvar.StringSet
+		Output                          flagvar.Enum
+		OutputFormat                    output.Format
+		RegistryHeaders                 flagvar.Assignments
+		Quiet                           bool
+		MatchingUpdatesFoundNonzeroExit bool
+		AnyUpdatesFoundNonzeroExit      bool
+		All                             bool
+		GenerateSed                     bool
+		IncludePrereleaseVersions       bool
 	}
 )
 
@@ -66,14 +70,18 @@ func main() {
 	listFlagSet.Var(&config.Output, "o", "(alias for -output)")
 	checkFlagSet.Var(&config.Output, "output", "output format, "+config.Output.Help())
 	checkFlagSet.Var(&config.Output, "o", "(alias for -output)")
-	checkFlagSet.BoolVar(&config.UpdatesFoundNonzeroExit, "e", config.UpdatesFoundNonzeroExit, "(alias for -updates-found-nonzero-exit)")
-	checkFlagSet.BoolVar(&config.UpdatesFoundNonzeroExit, "updates-found-nonzero-exit", config.UpdatesFoundNonzeroExit, "exit with a nonzero code when modules with updates are found")
+	checkFlagSet.BoolVar(&config.MatchingUpdatesFoundNonzeroExit, "e", config.MatchingUpdatesFoundNonzeroExit, "(alias for -updates-found-nonzero-exit)")
+	checkFlagSet.BoolVar(&config.MatchingUpdatesFoundNonzeroExit, "updates-found-nonzero-exit", config.MatchingUpdatesFoundNonzeroExit, "exit with a nonzero code when modules with updates matching are found (respecting version constraints)")
+	checkFlagSet.BoolVar(&config.AnyUpdatesFoundNonzeroExit, "n", config.AnyUpdatesFoundNonzeroExit, "(alias for -any-updates-found-nonzero-exit)")
+	checkFlagSet.BoolVar(&config.AnyUpdatesFoundNonzeroExit, "any-updates-found-nonzero-exit", config.AnyUpdatesFoundNonzeroExit, "exit with a nonzero code when modules with updates are found (ignoring version constraints)")
+	checkFlagSet.BoolVar(&config.IncludePrereleaseVersions, "pre-release", config.IncludePrereleaseVersions, "include pre-release versions")
 	checkFlagSet.BoolVar(&config.All, "a", config.All, "(alias for -all)")
 	checkFlagSet.BoolVar(&config.All, "all", config.All, "include modules without updates")
 	listFlagSet.Var(&config.ModuleNames, "module", "include this module (may be specified repeatedly. by default, all modules are included)")
 	checkFlagSet.Var(&config.ModuleNames, "module", "include this module (may be specified repeatedly. by default, all modules are included)")
 	checkFlagSet.Var(&config.RegistryHeaders, "H", "(alias for -registry-header)")
 	checkFlagSet.Var(&config.RegistryHeaders, "registry-header", fmt.Sprintf("extra HTTP headers for requests to Terraform module registries (%s, may be specified repeatedly)", config.RegistryHeaders.Help()))
+	checkFlagSet.BoolVar(&config.GenerateSed, "sed", config.GenerateSed, "generate sed statements for upgrade")
 
 	cmdList := &ffcli.Command{
 		Name:       "list",
@@ -141,6 +149,11 @@ func main() {
 			Nested:  http.DefaultTransport,
 		}
 	}
+	if githubToken := os.Getenv("GITHUB_TOKEN"); githubToken != "" {
+		updatesClient.GitAuth = &githttp.BasicAuth{
+			Username: githubToken,
+		}
+	}
 	if err := cmdRoot.Run(context.Background()); err != nil && !errors.Is(err, flag.ErrHelp) {
 		log.Fatal(err)
 	}
@@ -197,6 +210,7 @@ func updates(scanResults []scan.Result) {
 	var (
 		out                  output.Updates
 		foundMatchingUpdates bool
+		foundAnyUpdates      bool
 	)
 	for _, m := range scanResults {
 		parsed, err := modulecall.Parse(m.ModuleCall)
@@ -204,7 +218,7 @@ func updates(scanResults []scan.Result) {
 			log.Printf("error: %v", err)
 			continue
 		}
-		update, err := updatesClient.Update(*parsed.Source, parsed.Version, parsed.Constraints)
+		update, err := updatesClient.Update(*parsed.Source, parsed.Version, parsed.Constraints, config.IncludePrereleaseVersions)
 		if err != nil {
 			log.Printf("error: %v", err)
 			continue
@@ -223,9 +237,11 @@ func updates(scanResults []scan.Result) {
 		hasUpdate := false
 		if updateOutput.MatchingUpdate {
 			foundMatchingUpdates = true
+			foundAnyUpdates = true
 			hasUpdate = true
 		}
 		if updateOutput.NonMatchingUpdate {
+			foundAnyUpdates = true
 			hasUpdate = true
 		}
 		if !config.All && !hasUpdate {
@@ -237,8 +253,18 @@ func updates(scanResults []scan.Result) {
 	if err := out.Format(os.Stdout, config.OutputFormat); err != nil {
 		log.Fatal(err)
 	}
-	if config.UpdatesFoundNonzeroExit {
+
+	if config.GenerateSed {
+		out.GenerateSed()
+	}
+
+	if config.MatchingUpdatesFoundNonzeroExit {
 		if foundMatchingUpdates {
+			os.Exit(1)
+		}
+	}
+	if config.AnyUpdatesFoundNonzeroExit {
+		if foundAnyUpdates {
 			os.Exit(1)
 		}
 	}
