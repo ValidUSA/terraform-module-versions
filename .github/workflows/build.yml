@@ -1,5 +1,7 @@
+---
 name: Build
 
+# yamllint disable-line rule:truthy
 on:
   push:
     branches: [master]
@@ -37,14 +39,5 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         run: |
           make release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Release (2)
-        if: ${{ github.event_name != 'pull_request' }}
-        run: |
-          npm version patch
-          git add package.json
-          git commit -am "Bump version" || true
-          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
