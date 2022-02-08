@@ -23,11 +23,11 @@ module "consul_github_ssh" {
 }
 
 module "example_git_ssh_branch" {
-  source = "git::ssh://git@github.com/keilerkonzept/terraform-module-versions?ref=master"
+  source = "git::ssh://git@github.com/ValidUSA/terraform-module-versions?ref=master"
 }
 
 module "example_git_scp" {
-  source = "git::git@github.com:keilerkonzept/terraform-module-versions?ref=0.12.0"
+  source = "git::git@github.com:ValidUSA/terraform-module-versions?ref=0.12.0"
   version = "~> 0.12"
 }
 

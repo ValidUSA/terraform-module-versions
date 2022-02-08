@@ -13,12 +13,12 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/keilerkonzept/terraform-module-versions/pkg/httputil"
-	"github.com/keilerkonzept/terraform-module-versions/pkg/modulecall"
-	"github.com/keilerkonzept/terraform-module-versions/pkg/output"
-	"github.com/keilerkonzept/terraform-module-versions/pkg/registry"
-	"github.com/keilerkonzept/terraform-module-versions/pkg/scan"
-	"github.com/keilerkonzept/terraform-module-versions/pkg/update"
+	"github.com/ValidUSA/terraform-module-versions/pkg/httputil"
+	"github.com/ValidUSA/terraform-module-versions/pkg/modulecall"
+	"github.com/ValidUSA/terraform-module-versions/pkg/output"
+	"github.com/ValidUSA/terraform-module-versions/pkg/registry"
+	"github.com/ValidUSA/terraform-module-versions/pkg/scan"
+	"github.com/ValidUSA/terraform-module-versions/pkg/update"
 
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/peterbourgon/ff/v3/ffcli"
